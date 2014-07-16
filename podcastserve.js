@@ -8,10 +8,18 @@ var id3 = require('id3js');
 
 var PodcastServer = function() {
 
+
+    var app = express();
+    var hostPath = "http://localhost";
+    var port = "3000";
+    var serverUrl = hostPath + ":" + port + "/" 
     var wwwPath = "www";
     var mediaExtensions = [".mp3"];
     var podcastData = {};
 
+    app.use(express.static(path.join(__dirname, wwwPath)));
+    app.listen(port);
+    console.log ("Listening at " + serverUrl + "...")
 
     function isMediaFile(filename) {
         return _.contains(mediaExtensions, path.extname(filename))
@@ -49,31 +57,31 @@ var PodcastServer = function() {
     function createFeed(fileSet) {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
-        console.log("Creating feed for " + dirName);
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
-            feed_url: dirName + ".xml"
+            feed_url: serverUrl + encodeURIComponent(feedTitle) + ".xml"
         };
         var feed = new Podcast(feedOptions);
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
             var baseFileName = fileSet.files[i];
             var fileName = path.join(dirName, baseFileName);
-            console.log("Creating items for " + fileName);
+            var cleanName = path.basename(baseFileName, path.extname(fileName));
             var itemOptions = {
-                title: fileName,
-                description: path.basename(fileName),
-                url: path.join(dirName, path.basename(fileName, path.extname(fileName))) + ".xml",
+                title: cleanName,
+                description: cleanName,
+                url: serverUrl + encodeURIComponent(path.join(feedTitle, cleanName) + ".html"),
                 date: Date.now(),
                 enclosure: {
-                    url: path.join(path.basename(dirName, path.extname(fileName))) + ".xml",
+                    url: serverUrl + encodeURIComponent(path.join(feedTitle, baseFileName)),
                     file: fileName
                 }
             }
             feed.item(itemOptions);
-            var xml = feed.xml();
-            fs.writeFile(dirName + ".xml", xml);
         }
+        console.log("Creating feed for " + dirName);
+        var xml = feed.xml();
+        fs.writeFile(dirName + ".xml", xml);
     }
 
     getSubDirs(wwwPath)
