@@ -1,6 +1,10 @@
-# Web Server #
-##############
+# Web Server / Test Data #
+##########################
 www/
+*.xml
+*.mp3
+*.mp4
+
 
 # Sublime Text files #
 ######################
@@ -8,9 +12,10 @@ www/
 
 # Logs #
 ########
-
 *.log
 
 # node.js modules #
 ###################
 node_modules/
+
+

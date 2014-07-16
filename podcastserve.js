@@ -72,7 +72,7 @@ var PodcastServer = function() {
             }
             feed.item(itemOptions);
             var xml = feed.xml();
-            fs.writeFile(feedTitle + ".xml", xml);
+            fs.writeFile(dirName + ".xml", xml);
         }
     }
 
