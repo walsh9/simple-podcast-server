@@ -3,11 +3,10 @@ var Promise = require("bluebird");
 var _ = require("lodash");
 var express = require("express");
 var fs = Promise.promisifyAll(require("fs"));
-var path = require('path');
 var id3 = require('id3js');
-
+var path = require('path');
+id3Async = Promise.promisify(id3);
 var PodcastServer = function() {
-
 
     var app = express();
     var hostPath = "http://localhost";
@@ -19,7 +18,7 @@ var PodcastServer = function() {
 
     app.use(express.static(path.join(__dirname, wwwPath)));
     app.listen(port);
-    console.log ("Listening at " + serverUrl + "...")
+    console.log ("Listening at " + serverUrl + " ...")
 
     function isMediaFile(filename) {
         return _.contains(mediaExtensions, path.extname(filename))
@@ -36,9 +35,19 @@ var PodcastServer = function() {
                     return stat.isDirectory()
                 })
             }).each(function(x) {
-                path.join(root, x)
+                return path.join(root, x)
             })
     }
+
+    function getId3(fileName) {
+        var file = {};
+        file["name"] = path.basename(fileName);
+        if (path.extname(fileName) == ".mp3") {
+            file["tags"] = id3Async({"file": fileName, "type": id3.OPEN_LOCAL})
+        }
+        return file;
+    }
+
 
     function getFiles(folder) {
         var fileSet = {
@@ -46,6 +55,10 @@ var PodcastServer = function() {
         }
         return fs.readdirAsync(folder)
             .filter(isMediaFile)
+            .map(function(x) {
+                return path.join(folder, x)
+            })
+            .map(getId3)
             .then(
                 function(files) {
                     fileSet["files"] = files;
@@ -64,7 +77,7 @@ var PodcastServer = function() {
         };
         var feed = new Podcast(feedOptions);
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
-            var baseFileName = fileSet.files[i];
+            var baseFileName = fileSet.files[i].name;
             var fileName = path.join(dirName, baseFileName);
             var cleanName = path.basename(baseFileName, path.extname(fileName));
             var itemOptions = {
