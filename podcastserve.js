@@ -8,20 +8,24 @@ var path = require('path');
 id3Async = Promise.promisify(id3);
 var PodcastServer = function() {
 
-    var app = express();
-    var hostPath = "http://localhost";
-    var port = "3000";
-    var serverUrl = hostPath + ":" + port + "/" 
-    var wwwPath = "www";
-    var mediaExtensions = [".mp3"];
-    var podcastData = {};
+    var defaults = {
+        "serverName" : "localhost",
+        "port" : "3000",
+        "documentRoot" : "www",
+        "mediaExtensions" : [".mp3"]
 
-    app.use(express.static(path.join(__dirname, wwwPath)));
-    app.listen(port);
+    };
+
+    var options = defaults;
+    var app = express();
+    var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
+
+    app.use(express.static(path.join(__dirname, options.documentRoot)));
+    app.listen(options.port);
     console.log ("Listening at " + serverUrl + " ...")
 
     function isMediaFile(filename) {
-        return _.contains(mediaExtensions, path.extname(filename))
+        return _.contains(options.mediaExtensions, path.extname(filename))
     }
 
     function getSubDirs(root) {
@@ -97,7 +101,7 @@ var PodcastServer = function() {
         fs.writeFile(dirName + ".xml", xml);
     }
 
-    getSubDirs(wwwPath)
+    getSubDirs(options.documentRoot)
         .map(getFiles)
         .map(createFeed);
 
