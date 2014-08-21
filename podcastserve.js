@@ -5,15 +5,14 @@ var express = require("express");
 var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
 var path = require('path');
-id3Async = Promise.promisify(id3);
-var PodcastServer = function() {
+var id3Async = Promise.promisify(id3);
+var PodcastServer = function () {
 
     var defaults = {
         "serverName" : "localhost",
         "port" : "3000",
         "documentRoot" : "www",
         "mediaExtensions" : [".mp3"]
-
     };
 
     var options = defaults;
@@ -22,32 +21,32 @@ var PodcastServer = function() {
 
     app.use(express.static(path.join(__dirname, options.documentRoot)));
     app.listen(options.port);
-    console.log ("Listening at " + serverUrl + " ...")
+    console.log ("Listening at " + serverUrl + " ...");
 
     function isMediaFile(filename) {
-        return _.contains(options.mediaExtensions, path.extname(filename))
+        return _.contains(options.mediaExtensions, path.extname(filename));
     }
 
     function getSubDirs(root) {
         return fs.readdirAsync(root)
             .map(function getPath(fileName) {
-                return path.join(root, fileName)
+                return path.join(root, fileName);
             })
             .filter(function(filePath) {
                 return fs.statAsync(filePath).then(function(stat) {
                     stat.filePath = filePath;
-                    return stat.isDirectory()
-                })
+                    return stat.isDirectory();
+                });
             }).each(function(x) {
-                return path.join(root, x)
-            })
+                return path.join(root, x);
+            });
     }
 
     function getId3(fileName) {
         var file = {};
-        file["name"] = path.basename(fileName);
+        file.name = path.basename(fileName);
         if (path.extname(fileName) == ".mp3") {
-            file["tags"] = id3Async({"file": fileName, "type": id3.OPEN_LOCAL})
+            file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
         }
         return file;
     }
@@ -56,19 +55,19 @@ var PodcastServer = function() {
     function getFiles(folder) {
         var fileSet = {
             "folderName": folder
-        }
+        };
         return fs.readdirAsync(folder)
             .filter(isMediaFile)
             .map(function(x) {
-                return path.join(folder, x)
+                return path.join(folder, x);
             })
             .map(getId3)
             .then(
                 function(files) {
-                    fileSet["files"] = files;
+                    fileSet.files = files;
                     return fileSet;
                 }
-            )
+            );
     }
 
     function createFeed(fileSet) {
@@ -93,7 +92,7 @@ var PodcastServer = function() {
                     url: serverUrl + encodeURIComponent(path.join(feedTitle, baseFileName)),
                     file: fileName
                 }
-            }
+            };
             feed.item(itemOptions);
         }
         console.log("Creating feed for " + dirName);
