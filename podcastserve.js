@@ -11,15 +11,21 @@ var PodcastServer = function () {
     var defaults = {
         "serverName" : "localhost",
         "port" : "3000",
-        "documentRoot" : "www",
+        "documentRoot" : "public",
         "mediaExtensions" : [".mp3"]
     };
 
     var options = defaults;
     var app = express();
     var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
+    var feeds = {
+        route: function (req, res) {
 
-    app.use(express.static(path.join(__dirname, options.documentRoot)));
+        },
+        xml: []
+    };
+
+    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
     app.listen(options.port);
     console.log ("Listening at " + serverUrl + " ...");
 
@@ -70,7 +76,7 @@ var PodcastServer = function () {
             );
     }
 
-    function createFeed(fileSet) {
+    function createFeedObject(fileSet) {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
         var feedOptions = {
@@ -86,10 +92,10 @@ var PodcastServer = function () {
             var itemOptions = {
                 title: cleanName,
                 description: cleanName,
-                url: serverUrl + encodeURIComponent(path.join(feedTitle, cleanName) + ".html"),
+                url: serverUrl + ['feeds', feedTitle, cleanName + ".html"].map(encodeURIComponent).join('/'),
                 date: Date.now(),
                 enclosure: {
-                    url: serverUrl + encodeURIComponent(path.join(feedTitle, baseFileName)),
+                    url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
                     file: fileName
                 }
             };
@@ -97,11 +103,34 @@ var PodcastServer = function () {
         }
         console.log("Creating feed for " + dirName);
         var xml = feed.xml();
-        fs.writeFile(dirName + ".xml", xml);
+        return {"name": feedTitle,
+                "feed": xml
+               };
     }
+
+    function routeFeeds(feedObjects) {
+        var i = 0, 
+            length = feedObjects.length;
+            router = express.Router();
+        for (; i < length; i++) {
+            makeRouter(feedObjects[i].name, feedObjects[i].feed);
+        }
+        function makeRouter(name, xml) {
+            router.get('/' + encodeURIComponent(name) + ".xml", function(req, res) {
+                res.set('Content-Type', 'text/xml');
+                res.send(new Buffer(xml));
+            });
+            console.log(name);
+        }
+        app.use('/feeds', router);
+        return feedObjects;
+    }
+
+
 
     getSubDirs(options.documentRoot)
         .map(getFiles)
-        .map(createFeed);
+        .map(createFeedObject)
+        .then(routeFeeds);
 
 }();
