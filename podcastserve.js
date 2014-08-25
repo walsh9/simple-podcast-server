@@ -2,6 +2,7 @@ var Podcast = require("podcast");
 var Promise = require("bluebird");
 var _ = require("lodash");
 var express = require("express");
+var jade = require('jade');
 var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
 var path = require('path');
@@ -24,8 +25,8 @@ var PodcastServer = function () {
         },
         xml: []
     };
-
     app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
+    app.set('view engine', 'jade');
     app.listen(options.port);
     console.log ("Listening at " + serverUrl + " ...");
 
@@ -102,15 +103,16 @@ var PodcastServer = function () {
             feed.item(itemOptions);
         }
         console.log("Creating feed for " + dirName);
+        console.log(feed);
         return {"name": feed.title,
                 "feed": feed,
                 "xml" : feed.xml()
                };
     }
 
-    escapeRegExp = function( value ) {
-     return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-    };
+    function escapeRegExp( value ) {
+      return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+    }
 
     function routeFeeds(feedObjects) {
         var i = 0, 
@@ -130,20 +132,20 @@ var PodcastServer = function () {
         return feedObjects;
     }
 
-    function routeIndex(feedObjects) {
-        var i = 0, 
-            length = feedObjects.length,
-            router = express.Router();
-            html = [];
-        html.push('<html><body><ul>');
-        for (; i < length; i++) {
-            html.push('<li><a href="' + feedObjects[i].feed.feed_url + '">' + feedObjects[i].name + '</a></li>');
+    function routeView(route, template, locals) {
+      console.log('Creating Route for ' + route);
+      app.get(route, function(req, res) {
+        res.render(template, locals);
+      });
+    }
+
+    function routeTemplates(feedObjects) {
+        routeView('/', 'index', {"feeds": feedObjects});
+        for (var i = 0; i < feedObjects.length; i++) {
+            routeView('/feeds/' + escapeRegExp(encodeURIComponent(feedObjects[i].feed.title)) + '.html', 
+                'feed', 
+                {"feed": feedObjects[i].feed});
         }
-        html.push('</ul></body></html>');
-        router.get('/', function(req, res) {
-            res.send(html.join(''));
-        });
-        app.use('/', router);
         return feedObjects;
     }
 
@@ -151,6 +153,6 @@ var PodcastServer = function () {
         .map(getFiles)
         .map(createFeedObject)
         .then(routeFeeds)
-        .then(routeIndex);
+        .then(routeTemplates);
 
 }();

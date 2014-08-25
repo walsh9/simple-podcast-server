@@ -1,0 +1,13 @@
+doctype
+html
+  head
+    title Feeds
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    header
+      h1 Feeds
+    .content
+      ul.feedlist
+        each feed in feeds
+          li
+            a(href='feeds/' + feed.name + '.html') #{feed.name}
