@@ -82,7 +82,7 @@ var PodcastServer = function () {
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
-            feed_url: serverUrl + encodeURIComponent(feedTitle) + ".xml"
+            feed_url: serverUrl + ['feeds', feedTitle + ".xml"].map(encodeURIComponent).join('/')
         };
         var feed = new Podcast(feedOptions);
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
@@ -102,21 +102,25 @@ var PodcastServer = function () {
             feed.item(itemOptions);
         }
         console.log("Creating feed for " + dirName);
-        var xml = feed.xml();
-        return {"name": feedTitle,
-                "feed": xml
+        return {"name": feed.title,
+                "feed": feed,
+                "xml" : feed.xml()
                };
     }
 
+    escapeRegExp = function( value ) {
+     return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+    };
+
     function routeFeeds(feedObjects) {
         var i = 0, 
-            length = feedObjects.length;
+            length = feedObjects.length,
             router = express.Router();
         for (; i < length; i++) {
-            makeRouter(feedObjects[i].name, feedObjects[i].feed);
+            makeRouter(feedObjects[i].name, feedObjects[i].xml);
         }
         function makeRouter(name, xml) {
-            router.get('/' + encodeURIComponent(name) + ".xml", function(req, res) {
+            router.get('/' + escapeRegExp(encodeURIComponent(name)) + ".xml", function(req, res) {
                 res.set('Content-Type', 'text/xml');
                 res.send(new Buffer(xml));
             });
@@ -126,11 +130,27 @@ var PodcastServer = function () {
         return feedObjects;
     }
 
-
+    function routeIndex(feedObjects) {
+        var i = 0, 
+            length = feedObjects.length,
+            router = express.Router();
+            html = [];
+        html.push('<html><body><ul>');
+        for (; i < length; i++) {
+            html.push('<li><a href="' + feedObjects[i].feed.feed_url + '">' + feedObjects[i].name + '</a></li>');
+        }
+        html.push('</ul></body></html>');
+        router.get('/', function(req, res) {
+            res.send(html.join(''));
+        });
+        app.use('/', router);
+        return feedObjects;
+    }
 
     getSubDirs(options.documentRoot)
         .map(getFiles)
         .map(createFeedObject)
-        .then(routeFeeds);
+        .then(routeFeeds)
+        .then(routeIndex);
 
 }();
