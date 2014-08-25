@@ -1,6 +1,6 @@
 # Web Server / Test Data #
 ##########################
-www/
+public/
 *.xml
 *.mp3
 *.mp4
