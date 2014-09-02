@@ -15,26 +15,13 @@ var PodcastServer = function () {
         "documentRoot" : "public",
         "mediaExtensions" : [".mp3"]
     };
-
     var options = defaults;
     var app = express();
     var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
-    var feeds = {
-        route: function (req, res) {
-
-        },
-        xml: []
-    };
-    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
-    app.set('view engine', 'jade');
-    app.listen(options.port);
-    console.log ("Listening at " + serverUrl + " ...");
-
-    function isMediaFile(filename) {
+    var isMediaFile = function (filename) {
         return _.contains(options.mediaExtensions, path.extname(filename));
-    }
-
-    function getSubDirs(root) {
+    };
+    var getSubDirs = function (root) {
         return fs.readdirAsync(root)
             .map(function getPath(fileName) {
                 return path.join(root, fileName);
@@ -47,19 +34,16 @@ var PodcastServer = function () {
             }).each(function(x) {
                 return path.join(root, x);
             });
-    }
-
-    function getId3(fileName) {
+    };
+    var getId3 = function (fileName) {
         var file = {};
         file.name = path.basename(fileName);
         if (path.extname(fileName) == ".mp3") {
             file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
         }
         return file;
-    }
-
-
-    function getFiles(folder) {
+    };
+    var getFiles = function (folder) {
         var fileSet = {
             "folderName": folder
         };
@@ -75,9 +59,8 @@ var PodcastServer = function () {
                     return fileSet;
                 }
             );
-    }
-
-    function createFeedObject(fileSet) {
+    };
+    var createFeedObject = function (fileSet) {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
         var feedOptions = {
@@ -103,18 +86,16 @@ var PodcastServer = function () {
             feed.item(itemOptions);
         }
         console.log("Creating feed for " + dirName);
-        console.log(feed);
+        //console.log(feed);
         return {"name": feed.title,
                 "feed": feed,
                 "xml" : feed.xml()
                };
-    }
-
-    function escapeRegExp( value ) {
+    };
+    var escapeRegExp = function (value) {
       return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-    }
-
-    function routeFeeds(feedObjects) {
+    };
+    var routeFeeds = function (feedObjects) {
         var i = 0, 
             length = feedObjects.length,
             router = express.Router();
@@ -126,20 +107,17 @@ var PodcastServer = function () {
                 res.set('Content-Type', 'text/xml');
                 res.send(new Buffer(xml));
             });
-            console.log(name);
         }
         app.use('/feeds', router);
         return feedObjects;
-    }
-
-    function routeView(route, template, locals) {
+    };
+    var routeView = function(route, template, locals) {
       console.log('Creating Route for ' + route);
       app.get(route, function(req, res) {
         res.render(template, locals);
       });
-    }
-
-    function routeTemplates(feedObjects) {
+    };
+    var routeTemplates = function (feedObjects) {
         routeView('/', 'index', {"feeds": feedObjects});
         for (var i = 0; i < feedObjects.length; i++) {
             routeView('/feeds/' + escapeRegExp(encodeURIComponent(feedObjects[i].feed.title)) + '.html', 
@@ -147,12 +125,14 @@ var PodcastServer = function () {
                 {"feed": feedObjects[i].feed});
         }
         return feedObjects;
-    }
-
+    };
+    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
+    app.set('view engine', 'jade');
+    app.listen(options.port);
+    console.log ("Listening at " + serverUrl + " ...");
     getSubDirs(options.documentRoot)
         .map(getFiles)
         .map(createFeedObject)
         .then(routeFeeds)
         .then(routeTemplates);
-
 }();
