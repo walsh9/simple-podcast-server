@@ -95,27 +95,27 @@ var PodcastServer = function () {
     var escapeRegExp = function (value) {
       return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
     };
-    var routeFeeds = function (feedObjects) {
-        var i = 0, 
-            length = feedObjects.length,
-            router = express.Router();
-        for (; i < length; i++) {
-            makeRouter(feedObjects[i].name, feedObjects[i].xml);
-        }
-        function makeRouter(name, xml) {
-            router.get('/' + escapeRegExp(encodeURIComponent(name)) + ".xml", function(req, res) {
-                res.set('Content-Type', 'text/xml');
-                res.send(new Buffer(xml));
-            });
-        }
-        app.use('/feeds', router);
-        return feedObjects;
+    var routeXML = function (route, xml) {
+        console.log('Creating Route for ' + route);
+        app.get(route, function(req, res) {
+            res.set('Content-Type', 'text/xml');
+            res.send(new Buffer(xml));
+        });
     };
     var routeView = function(route, template, locals) {
       console.log('Creating Route for ' + route);
       app.get(route, function(req, res) {
         res.render(template, locals);
       });
+    };
+    var routeFeeds = function (feedObjects) {
+        var i = 0, 
+            length = feedObjects.length,
+            router = express.Router();
+        for (; i < length; i++) {
+            routeXML('/feeds/' + escapeRegExp(encodeURIComponent(feedObjects[i].name)) + ".xml", feedObjects[i].xml);
+        }
+        return feedObjects;
     };
     var routeTemplates = function (feedObjects) {
         routeView('/', 'index', {"feeds": feedObjects});
