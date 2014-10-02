@@ -1,9 +1,7 @@
-doctype
-html
-  head
-    title #{feed.title}
-    link(rel='stylesheet', href='/css/style.css')
-  body
+extends layout
+
+block content
+  .container
     header
       h1 
         a(href=feed.feed_url) #{feed.title}
