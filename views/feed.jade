@@ -6,6 +6,6 @@ block content
       h1 
         a(href=feed.feed_url) #{feed.title}
     .content
-      ul
+      ul.itemlist.list-group
         each item in feed.items
-          li #{item.title}
+          li.list-group-item #{item.title}

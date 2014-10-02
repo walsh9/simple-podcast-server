@@ -5,7 +5,6 @@ block content
     header
       h1 Feeds
     .content
-      ul.feedlist
+      div.feedlist.list-group
         each feed in feeds
-          li
-            a(href='feeds/' + feed) #{feed}
+          a.list-group-item(href='feeds/' + feed) #{feed}
