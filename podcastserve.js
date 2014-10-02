@@ -31,8 +31,9 @@ var PodcastServer = function () {
                     stat.filePath = filePath;
                     return stat.isDirectory();
                 });
-            }).each(function(x) {
-                return path.join(root, x);
+            })
+            .map(function(x) {
+                return path.basename(x);
             });
     };
     var getId3 = function (fileName) {
@@ -66,7 +67,7 @@ var PodcastServer = function () {
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
-            feed_url: serverUrl + ['feeds', feedTitle + ".xml"].map(encodeURIComponent).join('/')
+            feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/')
         };
         var feed = new Podcast(feedOptions);
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
@@ -76,7 +77,7 @@ var PodcastServer = function () {
             var itemOptions = {
                 title: cleanName,
                 description: cleanName,
-                url: serverUrl + ['feeds', feedTitle, cleanName + ".html"].map(encodeURIComponent).join('/'),
+                url: serverUrl + ['feeds', feedTitle, cleanName].map(encodeURIComponent).join('/'),
                 date: Date.now(),
                 enclosure: {
                     url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
@@ -92,47 +93,41 @@ var PodcastServer = function () {
                 "xml" : feed.xml()
                };
     };
-    var escapeRegExp = function (value) {
-      return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+    getIndex = function(req, res, next) {
+        getSubDirs(options.documentRoot)
+        .then(function renderIndexTemplate (dirs) {
+            res.render('index', {"feeds": dirs});
+        })
     };
-    var routeXML = function (route, xml) {
-        console.log('Creating Route for ' + route);
-        app.get(route, function(req, res) {
-            res.set('Content-Type', 'text/xml');
-            res.send(new Buffer(xml));
-        });
+    getFeed = function(req, res, next) {
+        var name = req.params.name;
+        var folder = path.join(options.documentRoot, name);
+        getFiles(folder)
+            .then(createFeedObject)
+            .then(function renderFeedTemplate (feedObject) {
+                res.render('feed', {"feed": feedObject.feed});
+            })
+            .catch(function(e) {
+                res.status(404).send('Couldn\'t find feed: ' + name);
+            });
     };
-    var routeView = function(route, template, locals) {
-      console.log('Creating Route for ' + route);
-      app.get(route, function(req, res) {
-        res.render(template, locals);
-      });
+    getFeedXml = function(req, res, next) {
+        var name = req.params.name;
+        var folder = path.join(options.documentRoot, name);
+        getFiles(folder)
+            .then(createFeedObject)
+            .then(function renderFeedXml (feedObject) {
+                res.send(new Buffer(feedObject.xml));
+            })
+            .catch(function(e) {
+                res.status(404).send('Couldn\'t find feed: ' + name);
+            });
     };
-    var routeFeeds = function (feedObjects) {
-        var i = 0, 
-            length = feedObjects.length,
-            router = express.Router();
-        for (; i < length; i++) {
-            routeXML('/feeds/' + escapeRegExp(encodeURIComponent(feedObjects[i].name)) + ".xml", feedObjects[i].xml);
-        }
-        return feedObjects;
-    };
-    var routeTemplates = function (feedObjects) {
-        routeView('/', 'index', {"feeds": feedObjects});
-        for (var i = 0; i < feedObjects.length; i++) {
-            routeView('/feeds/' + escapeRegExp(encodeURIComponent(feedObjects[i].feed.title)) + '.html', 
-                'feed', 
-                {"feed": feedObjects[i].feed});
-        }
-        return feedObjects;
-    };
-    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
+
     app.set('view engine', 'jade');
-    app.listen(options.port);
+    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
+    app.use('/feeds/xml/:name', getFeedXml);
+    app.use('/feeds/:name', getFeed);
+    app.use('/', getIndex);    app.listen(options.port);
     console.log ("Listening at " + serverUrl + " ...");
-    getSubDirs(options.documentRoot)
-        .map(getFiles)
-        .map(createFeedObject)
-        .then(routeFeeds)
-        .then(routeTemplates);
 }();
