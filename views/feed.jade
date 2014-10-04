@@ -9,3 +9,5 @@ block content
       ul.itemlist.list-group
         each item in feed.items
           li.list-group-item #{item.title}
+            audio.pull-right(controls='controls')
+                source(src=item.enclosure.url, type='audio/mpeg')
