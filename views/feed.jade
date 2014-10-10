@@ -4,7 +4,8 @@ block content
   .container
     header
       h1 
-        a(href=feed.feed_url) #{feed.title}
+        a(href=feed.feed_url) #{feed.title} 
+          span.mega-octicon.octicon-rss 
     .content
       ul.itemlist.list-group
         each item in feed.items
