@@ -7,15 +7,22 @@ var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
 var path = require('path');
 var id3Async = Promise.promisify(id3);
+
+// load configFile
+var config = require('./config');
+
 var PodcastServer = function () {
 
     var defaults = {
         "serverName" : "localhost",
         "port" : "3000",
         "documentRoot" : "public",
-        "mediaExtensions" : [".mp3"]
+        "mediaExtensions" : [".mp3",".m4a",".mp4"]
     };
-    var options = defaults;
+    var options = {}
+    Object.keys(defaults).forEach(function (property) {
+        options[property] = config[property] || defaults[property];
+    });
     var app = express();
     var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
     var isMediaFile = function (filename) {
