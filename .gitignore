@@ -6,6 +6,10 @@ public/
 *.mp4
 *.m4a
 
+# Junk #
+########
+.DS_Store
+
 # Sublime Text files #
 ######################
 .sublime-*
