@@ -10,5 +10,10 @@ block content
       ul.itemlist.list-group
         each item in feed.items
           li.list-group-item #{item.title}
-            audio.pull-right(controls='controls')
-                source(src=item.enclosure.url, type='audio/mpeg')
+            button.btn.btn-default.octicon.octicon-playback-play.pull-right
+            audio
+               source(src=item.enclosure.url, type='audio/mpeg')
+      .btn-group.player
+        button.btn.btn-default.mega-octicon.octicon-playback-rewind
+        button.btn.btn-default.mega-octicon.octicon-playback-play
+        button.btn.btn-default.mega-octicon.octicon-playback-fast-forward

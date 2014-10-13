@@ -134,6 +134,8 @@ var PodcastServer = function () {
     app.set('view engine', 'jade');
     app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
     app.use('/octicons', express.static(path.join(__dirname, 'octicons')));
+    app.use('/css', express.static(path.join(__dirname, 'css')));
+    app.use('/js', express.static(path.join(__dirname, 'js')));
     app.use('/feeds/xml/:name', getFeedXml);
     app.use('/feeds/:name', getFeed);
     app.use('/', getIndex);    
