@@ -8,10 +8,11 @@ block content
           span.mega-octicon.octicon-rss 
     .content
       ul.itemlist.list-group
+        - var count = 0;
         each item in feed.items
-          li.list-group-item #{item.title}
-            button.btn.btn-default.octicon.octicon-playback-play.pull-right
-            audio
+          li.list-group-item #{item.title} 
+            button.btn.btn-default.octicon.octicon-playback-play.pull-right(data-number=#{count})
+            audio(data-number=#{count})
                source(src=item.enclosure.url, type='audio/mpeg')
       .btn-group.player
         button.btn.btn-default.mega-octicon.octicon-playback-rewind
