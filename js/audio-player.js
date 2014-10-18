@@ -1,35 +1,46 @@
 (function () {
     'use strict';
-    var getPlayers = function() {
-        return document.querySelectorAll('audio');
-    };
-    var toggleClass = (el, class1, class2) {
-        if el.classList.contains(class1) {
-            el.classList.remove(class1);
-            el.classList.add(class2);
-        }
-        else if el.classList.contains(class2) {
-            el.classList.remove(class2);
-            el.classList.add(class1);
-        }
-    };
-    var togglePlay = function(audioEl) {
-        if (audioEl.paused) {
-            audioEl.play();
+    var player = document.querySelector('.player audio');
+    var source = document.querySelector('.player audio source');
+    var paused = function() {
+        return player.paused;
+    }
+    var playButton = document.querySelector('.player .play');
+    var play = function () {
+        player.play();
+    }
+    var pause = function () {
+        player.pause();
+    }
+    var toggle = function () {
+        if (paused()) {
+            playButton.classList.remove('octicon-playback-play');
+            playButton.classList.add('octicon-playback-pause');
+            play();
         } else {
-            audioEl.pause();
-        }
+            playButton.classList.remove('octicon-playback-pause');
+            playButton.classList.add('octicon-playback-play');
+            pause();            
+        };
     };
-    var togglePlayByClass = function(className) {
-        var players = getPlayers()
-        var i, player;
-        for (i = 0; i < players.length; i++) {
-            player = players[i];
-            if player.classList.contains(className) {
-                player.play();
-            } else {
-                player.pause();
-            }
-        }
+    var load = function (url) {
+        source.src = url;
+        player.load();
     };
+    var playItem = function() {
+        var url = this.getAttribute('data-url');
+        load(url);
+        play();
+    };
+    var attachButtons = function () {
+        var items = document.querySelectorAll('.item-play-button');
+        var i, item;
+        for (i = 0; i < items.length; i++) {
+            item = items[i];
+
+            item.addEventListener('click', playItem, true);
+        }
+        playButton.addEventListener('click', toggle, true);
+    };
+    attachButtons();
 }())
