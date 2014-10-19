@@ -1,6 +1,11 @@
-.btn-group.player
+.btn-group.player.is-hidden
     audio
         source(type="audio/mpeg")
-    button.btn.btn-default.mega-octicon.octicon-playback-rewind.skip-back 10
-    button.btn.btn-default.mega-octicon.octicon-playback-play.play 
-    button.btn.btn-default.mega-octicon.octicon-playback-fast-forward.skip-ahead 30
+    .player-info
+        span.player-np-label Now Playing: 
+        span.player-title Nothing
+        span.player-time.pull-right
+    .player-controls
+        button.btn.btn-default.mega-octicon.octicon-playback-rewind.player-skip-back 10
+        button.btn.btn-default.mega-octicon.octicon-playback-play.player-play 
+        button.btn.btn-default.mega-octicon.octicon-playback-fast-forward.player-skip-ahead 30

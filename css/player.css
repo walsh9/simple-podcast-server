@@ -1,0 +1,29 @@
+body {
+    min-height: 100%;
+    height: auto;
+}
+.player {
+    position: fixed;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    background-color: #1d1f21;
+    color: #ffffff;
+    padding: 0 6px;
+    height: 75px;
+    transition: bottom 1s ease-out;
+    bottom: 0;
+}
+.player.is-hidden {
+    bottom: -75px;
+}
+.player .player-title {
+    color: #ccddee;
+}
+.player .player-time {
+    color: #ccddee;
+}
+.player .btn {
+    background-color: #333;
+    color: #ffffff;
+}

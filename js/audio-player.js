@@ -3,13 +3,25 @@
     var skipBackInterval = 10;
     var skipAheadInterval = 30;
     var player = document.querySelector('.player audio');
+    player.title = 'Nothing';
     var source = document.querySelector('.player audio source');
-    var playButton = document.querySelector('.player .play');
-    var skipBackButton = document.querySelector('.player .skip-back');
-    var skipAheadButton = document.querySelector('.player .skip-ahead');
-    var paused = function() {
-        return player.paused;
-    };    
+    var playerContainer = document.querySelector('.player');
+    var playButton = document.querySelector('.player .player-play');
+    var skipBackButton = document.querySelector('.player .player-skip-back');
+    var skipAheadButton = document.querySelector('.player .player-skip-ahead');
+    var infoTitle = document.querySelector('.player .player-title');
+    var infoTime = document.querySelector('.player .player-time');
+    var secondsToTime = function (timeInSeconds) {
+        var hour = Math.floor(timeInSeconds / 3600);
+        var min = Math.floor(timeInSeconds % 3600 / 60);
+        var sec = Math.floor(timeInSeconds % 60);
+        sec = (sec < 10) ? '0' + sec : sec;
+        min = (hour > 0 && min < 10) ? '0' + min : min;
+        if (hour > 0) {
+            return hour + ':' + min + ':' + sec;
+        }
+        return min + ':' + sec;
+    };
     var play = function () {
         player.play();
     };
@@ -34,24 +46,46 @@
         skip(skipAheadInterval);
     };
     var toggle = function () {
-        if (paused()) {
-            playButton.classList.remove('octicon-playback-play');
-            playButton.classList.add('octicon-playback-pause');
+        if (player.paused) {
             play();
         } else {
+            pause();
+        };
+        updateView();
+    };
+    var load = function (url, title) {
+        if (source.src !== url) {
+            source.src = url;
+            player.title = title;
+            player.load();
+            updateView();
+        } else {
+            toggle();
+        }
+    };
+    var playItem = function () {
+        var url = this.getAttribute('data-url');
+        var title = this.parentElement.textContent;
+        load(url, title);
+        play();
+    };
+    var updateView = function () {
+        if (player.duration && playerContainer.classList.contains('is-hidden')) {
+            playerContainer.classList.remove('is-hidden');
+        }
+        infoTitle.textContent = player.title;
+        if (player.duration) {
+            infoTime.textContent = secondsToTime(player.currentTime) + ' / ' + secondsToTime(player.duration);
+        } else {
+            infoTime.textContent = '';
+        }
+        if (player.paused) {
             playButton.classList.remove('octicon-playback-pause');
             playButton.classList.add('octicon-playback-play');
-            pause();            
+        } else {
+            playButton.classList.remove('octicon-playback-play');
+            playButton.classList.add('octicon-playback-pause');
         };
-    };
-    var load = function (url) {
-        source.src = url;
-        player.load();
-    };
-    var playItem = function() {
-        var url = this.getAttribute('data-url');
-        load(url);
-        play();
     };
     var attachButtons = function () {
         var items = document.querySelectorAll('.item-play-button');
@@ -64,5 +98,7 @@
         skipBackButton.addEventListener('click', skipBack, true);
         skipAheadButton.addEventListener('click', skipAhead, true);        
     };
+    player.addEventListener('timeupdate', updateView, true);
     attachButtons();
+    updateView();
 }())
