@@ -64,10 +64,24 @@
         }
     };
     var playItem = function () {
-        var url = this.getAttribute('data-url');
-        var title = this.parentElement.textContent;
-        load(url, title);
-        play();
+        if (!this.parentElement.classList.contains('is-playing')) {
+            var items = this.parentElement.parentElement.children
+            var i, item;
+            for(i = 0; i < items.length; i++) {
+                var item = items[i];
+                var button = item.querySelector('.btn');
+                item.classList.remove('is-playing');
+                button.classList.remove('octicon-playback-pause');
+                button.classList.add('octicon-playback-play');
+            }
+            this.parentElement.classList.add('is-playing');
+            var url = this.getAttribute('data-url');
+            var title = this.parentElement.textContent;
+            load(url, title);
+            play();
+        } else {
+            toggle();
+        }
     };
     var updateView = function () {
         if (player.duration && playerContainer.classList.contains('is-hidden')) {
@@ -79,12 +93,17 @@
         } else {
             infoTime.textContent = '';
         }
+        var currentListButton = document.querySelector('.itemlist .is-playing .btn')
         if (player.paused) {
             playButton.classList.remove('octicon-playback-pause');
             playButton.classList.add('octicon-playback-play');
+            currentListButton.classList.remove('octicon-playback-pause');
+            currentListButton.classList.add('octicon-playback-play');
         } else {
             playButton.classList.remove('octicon-playback-play');
             playButton.classList.add('octicon-playback-pause');
+            currentListButton.classList.remove('octicon-playback-play');
+            currentListButton.classList.add('octicon-playback-pause');
         };
     };
     var attachButtons = function () {

@@ -3,12 +3,13 @@ extends layout
 block content
   .container
     header
-      h1 
-        a(href=feed.feed_url) #{feed.title} 
-          span.mega-octicon.octicon-rss 
+      a(href=feed.feed_url, target='new').btn.btn-primary.pull-right
+        b Subscribe 
+        span.octicon.octicon-rss
+      h1 #{feed.title}       
     .content
       ul.itemlist.list-group
         each item in feed.items
           li.list-group-item #{item.title} 
-            button.btn.btn-default.octicon.octicon-playback-play.pull-right.item-play-button(data-url=item.enclosure.url)
+            button.btn.btn-primary.octicon.octicon-playback-play.pull-right.item-play-button(data-url=item.enclosure.url)
     include player

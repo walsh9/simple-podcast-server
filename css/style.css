@@ -1,0 +1,65 @@
+body {
+    min-height: 100%;
+    height: auto;
+}
+.itemlist li {
+    height: 46px;
+}
+.itemlist li.is-playing {
+    color: #FFF;
+    background-color: #428BCA;
+    border-color: #428BCA;
+}
+.itemlist li.is-playing button.btn {
+    color: #333;
+    background-color: #FFF;
+    border-color: #CCC;
+}
+/* player styles */
+.player {
+    position: fixed;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    background-color: #1d1f21;
+    color: #ffffff;
+    height: 75px;
+    transition: bottom 1s ease-out;
+    bottom: 0;
+}
+.player .player-info {
+    height: 25px;
+    padding: 0 5px;
+    vertical-align: center;
+}
+.player .player-controls {
+     height: 50px;
+}
+.player.is-hidden {
+    bottom: -75px;
+}
+.player .player-title {
+    color: #ccddee;
+}
+.player .player-time {
+    color: #ccddee;
+}
+.player .player-controls button {
+    background-color: #1d1f21;
+    color: #ffffff;
+    padding: 0;
+    border-width: 0 2px 0 0;
+    border-right: 2px #2d2f33 solid;
+    height: 50px;
+    padding: 0 5px;
+    width: 50px;
+    vertical-align: middle;
+}
+.player .player-skip-ahead, .player .player-skip-back {
+    font-size: 18px;
+}
+.player .player-controls button span {
+    display: block;
+    font-family: Arial;
+    font-size: 14px;
+}
