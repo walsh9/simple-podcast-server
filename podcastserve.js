@@ -7,6 +7,7 @@ var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
 var path = require('path');
 var id3Async = Promise.promisify(id3);
+var naturalSort = require('./local_modules/naturalSort');
 
 // load configFile
 var config = require('./config');
@@ -77,6 +78,9 @@ var PodcastServer = function () {
             feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/')
         };
         var feed = new Podcast(feedOptions);
+        fileSet.files.sort(function (a, b) {
+            return naturalSort(a.name, b.name);
+        });
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
             var baseFileName = fileSet.files[i].name;
             var fileName = path.join(dirName, baseFileName);
