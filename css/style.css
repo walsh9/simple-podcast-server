@@ -15,6 +15,10 @@ body {
     background-color: #FFF;
     border-color: #CCC;
 }
+/* So player doesn't overlap bottom items */
+.itemlist {
+    margin-bottom: 85px;
+}
 /* player styles */
 .player {
     position: fixed;
