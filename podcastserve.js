@@ -46,9 +46,9 @@ var PodcastServer = function () {
     var getId3 = function (fileName) {
         var file = {};
         file.name = path.basename(fileName);
-        if (path.extname(fileName) == ".mp3") {
-            file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
-        }
+        // if (path.extname(fileName) == ".mp3") {
+        //     file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
+        // }
         return file;
     };
     var getFiles = function (folder) {
