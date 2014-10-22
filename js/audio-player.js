@@ -11,6 +11,7 @@
     var skipAheadButton = document.querySelector('.player .player-skip-ahead');
     var infoTitle = document.querySelector('.player .player-title');
     var infoTime = document.querySelector('.player .player-time');
+    var seekBar = $('.player input.player-seekbar').slider();
     var secondsToTime = function (timeInSeconds) {
         var hour = Math.floor(timeInSeconds / 3600);
         var min = Math.floor(timeInSeconds % 3600 / 60);
@@ -22,6 +23,10 @@
         }
         return min + ':' + sec;
     };
+    seekBar.slider('setAttribute', 'formatter', secondsToTime);
+    seekBar.on('slide', function(slider) {
+        player.currentTime = slider.value;
+    })
     var play = function () {
         player.play();
     };
@@ -90,22 +95,28 @@
         infoTitle.textContent = player.title;
         if (player.duration) {
             infoTime.textContent = secondsToTime(player.currentTime) + ' / ' + secondsToTime(player.duration);
+            seekBar.slider('setAttribute', 'min', 0)
+                .slider('setAttribute', 'max', player.duration)
+                .slider('setValue', player.currentTime);
         } else {
             infoTime.textContent = '';
         }
         var currentListButton = document.querySelector('.itemlist .is-playing .btn')
-        if (player.paused) {
-            playButton.classList.remove('octicon-playback-pause');
-            playButton.classList.add('octicon-playback-play');
-            currentListButton.classList.remove('octicon-playback-pause');
-            currentListButton.classList.add('octicon-playback-play');
-        } else {
-            playButton.classList.remove('octicon-playback-play');
-            playButton.classList.add('octicon-playback-pause');
-            currentListButton.classList.remove('octicon-playback-play');
-            currentListButton.classList.add('octicon-playback-pause');
+        if (currentListButton) {
+            if (player.paused) {
+                playButton.classList.remove('octicon-playback-pause');
+                playButton.classList.add('octicon-playback-play');
+                currentListButton.classList.remove('octicon-playback-pause');
+                currentListButton.classList.add('octicon-playback-play');
+            } else {
+                playButton.classList.remove('octicon-playback-play');
+                playButton.classList.add('octicon-playback-pause');
+                currentListButton.classList.remove('octicon-playback-play');
+                currentListButton.classList.add('octicon-playback-pause');
+            };
         };
     };
+
     var attachButtons = function () {
         var items = document.querySelectorAll('.item-play-button');
         var i, item;
