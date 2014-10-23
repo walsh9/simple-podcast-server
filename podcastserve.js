@@ -79,7 +79,7 @@ var PodcastServer = function () {
         };
         var feed = new Podcast(feedOptions);
         fileSet.files.sort(function (a, b) {
-            return naturalSort(a.name, b.name);
+            return naturalSort(b.name, a.name);
         });
         for (var i = 0, len = fileSet.files.length; i < len; i++) {
             var baseFileName = fileSet.files[i].name;
