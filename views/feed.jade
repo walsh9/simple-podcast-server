@@ -11,5 +11,10 @@ block content
       ul.itemlist.list-group
         each item in feed.items
           li.list-group-item #{item.title} 
-            button.btn.btn-primary.octicon.octicon-playback-play.pull-right.item-play-button(data-url=item.enclosure.url)
+            div.buttons.pull-right
+              button.btn.btn-primary.octicon.octicon-playback-play.item-play-button(type=button data-url=item.enclosure.url)
+              | &nbsp;
+              a.btn.btn-primary.btn-sm(href=item.enclosure.url)
+                span.glyphicon.glyphicon-save
+
     include player
