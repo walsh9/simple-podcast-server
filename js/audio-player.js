@@ -11,7 +11,7 @@
     var skipAheadButton = document.querySelector('.player .player-skip-ahead');
     var infoTitle = document.querySelector('.player .player-title');
     var infoTime = document.querySelector('.player .player-time');
-    var seekBar = $('.player input.player-seekbar').slider();
+    var seekBar = $('.player .player-seekbar input').slider();
     var secondsToTime = function (timeInSeconds) {
         var hour = Math.floor(timeInSeconds / 3600);
         var min = Math.floor(timeInSeconds % 3600 / 60);
@@ -23,8 +23,11 @@
         }
         return min + ':' + sec;
     };
-    seekBar.slider('setAttribute', 'formatter', secondsToTime);
-    seekBar.on('slide', function(slider) {
+    seekBar.slider('setAttribute', 'formatter', secondsToTime)
+    .slider('on', 'slide', function(slider) {
+        player.currentTime = slider.value;
+    })
+    .slider('on', 'slideStart', function(slider) {
         player.currentTime = slider.value;
     })
     var play = function () {
@@ -69,8 +72,8 @@
         }
     };
     var playItem = function () {
-        if (!this.parentElement.classList.contains('is-playing')) {
-            var items = this.parentElement.parentElement.children
+        if (!this.parentElement.parentElement.classList.contains('is-playing')) {
+            var items = this.parentElement.parentElement.parentElement.children
             var i, item;
             for(i = 0; i < items.length; i++) {
                 var item = items[i];
@@ -79,9 +82,9 @@
                 button.classList.remove('octicon-playback-pause');
                 button.classList.add('octicon-playback-play');
             }
-            this.parentElement.classList.add('is-playing');
+            this.parentElement.parentElement.classList.add('is-playing');
             var url = this.getAttribute('data-url');
-            var title = this.parentElement.textContent;
+            var title = this.parentElement.parentElement.textContent;
             load(url, title);
             play();
         } else {

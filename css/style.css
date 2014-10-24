@@ -10,7 +10,7 @@ body {
     background-color: #428BCA;
     border-color: #428BCA;
 }
-.itemlist li.is-playing button.btn {
+.itemlist li.is-playing .btn {
     color: #333;
     background-color: #FFF;
     border-color: #CCC;
@@ -66,4 +66,26 @@ body {
     display: block;
     font-family: Arial;
     font-size: 14px;
+}
+.player .player-seekbar {
+    display: inline-block;
+    margin: 0 22px;
+    width: 50%;
+}
+.player .player-seekbar .slider {
+    display: inline-block;
+    height: 50px;
+    width: 100%;
+}
+.player .player-seekbar .slider-track {
+    height: 6px;
+}
+.player .player-seekbar .slider-handle {
+    margin-left: -7px;
+    margin-top: -4px;
+    width: 14px;
+    height: 14px;
+}
+.player .player-seekbar .tooltip.top {
+    margin-top: -20px;
 }
