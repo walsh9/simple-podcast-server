@@ -136,7 +136,11 @@ var PodcastServer = function () {
     };
 
     app.set('view engine', 'jade');
-    app.use('/media', express.static(path.join(__dirname, options.documentRoot)));
+    app.use('/media', express.static(path.join(__dirname, options.documentRoot), {
+        setHeaders: function(res, path) {
+            res.attachment();
+        }
+    }));
     app.use('/lib', express.static(path.join(__dirname, 'lib')));
     app.use('/css', express.static(path.join(__dirname, 'css')));
     app.use('/js', express.static(path.join(__dirname, 'js')));
