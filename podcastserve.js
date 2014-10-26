@@ -18,7 +18,8 @@ var PodcastServer = function () {
         "serverName" : "localhost",
         "port" : "3000",
         "documentRoot" : "public",
-        "mediaExtensions" : [".mp3",".m4a",".mp4"]
+        "mediaExtensions" : [".mp3",".m4a",".mp4"],
+        "coverArtFiles" : ["folder.png", "folder.jpg"],
     };
     var options = {}
     Object.keys(defaults).forEach(function (property) {
@@ -28,6 +29,11 @@ var PodcastServer = function () {
     var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
     var isMediaFile = function (filename) {
         return _.contains(options.mediaExtensions, path.extname(filename));
+    };
+    var isCoverArt = function (filename) {
+        return _.contains(options.coverArtFiles.map(function (covername) {
+                return covername.toUpperCase()
+            }), filename.toUpperCase());
     };
     var getSubDirs = function (root) {
         return fs.readdirAsync(root)
@@ -44,6 +50,18 @@ var PodcastServer = function () {
                 return path.basename(x);
             });
     };
+    var setFeedCoverArt = function (feedObject) {
+        var folder = feedObject.folder
+        return fs.readdirAsync(folder)
+        .filter(isCoverArt)
+        .then(function (filenames) {
+            if (filenames.length > 0) {
+                feedObject.feed.itunesImage = 
+                feedObject.feed.image_url = serverUrl + ['media', feedObject.feed.title, filenames[0]].join('/');
+            }  
+            return feedObject;
+        });
+    }
     var getId3 = function (fileName) {
         var file = {};
         file.name = path.basename(fileName);
@@ -75,7 +93,9 @@ var PodcastServer = function () {
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
-            feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/')
+            feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/'),
+            generator: "Simple Podcast Server",
+            site_url: serverUrl,
         };
         var feed = new Podcast(feedOptions);
         fileSet.files.sort(function (a, b) {
@@ -98,10 +118,10 @@ var PodcastServer = function () {
             feed.item(itemOptions);
         }
         console.log("Creating feed for " + dirName);
-        //console.log(feed);
-        return {"name": feed.title,
-                "feed": feed,
-                "xml" : feed.xml()
+        return {"name"  : feed.title,
+                "folder": [options.documentRoot, feedTitle].join('/'),
+                "feed"  : feed,
+                "xml"   : feed.xml()
                };
     };
     getIndex = function(req, res, next) {
@@ -115,10 +135,13 @@ var PodcastServer = function () {
         var folder = path.join(options.documentRoot, name);
         getFiles(folder)
             .then(createFeedObject)
+            .then(setFeedCoverArt)
             .then(function renderFeedTemplate (feedObject) {
+                //console.log(feedObject);
                 res.render('feed', {"feed": feedObject.feed});
             })
             .catch(function(e) {
+                console.log(e);
                 res.status(404).send('Couldn\'t find feed: ' + name);
             });
     };
@@ -127,6 +150,7 @@ var PodcastServer = function () {
         var folder = path.join(options.documentRoot, name);
         getFiles(folder)
             .then(createFeedObject)
+            .then(setFeedCoverArt)
             .then(function renderFeedXml (feedObject) {
                 res.send(new Buffer(feedObject.xml));
             })

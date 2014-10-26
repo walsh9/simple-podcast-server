@@ -6,11 +6,17 @@ block content
       a(href=feed.feed_url, target='new').btn.btn-primary.pull-right
         b Subscribe 
         span.octicon.octicon-rss
-      h1 #{feed.title}       
+      h1 
+        if feed.image_url
+          .feed-image
+            img(src=feed.image_url)
+            
+        span #{feed.title}       
     .content
       ul.itemlist.list-group
         each item in feed.items
-          li.list-group-item #{item.title} 
+          li.list-group-item 
+            span.item-text #{item.title}
             div.buttons.pull-right
               button.btn.btn-primary.octicon.octicon-playback-play.item-play-button(type=button data-url=item.enclosure.url)
               | &nbsp;

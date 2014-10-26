@@ -7,4 +7,5 @@ block content
     .content
       div.feedlist.list-group
         each feed in feeds
-          a.list-group-item(href='feeds/' + feed) #{feed}
+          a.list-group-item(href='feeds/' + feed) 
+            span.item-text #{feed}

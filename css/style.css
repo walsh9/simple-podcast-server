@@ -2,6 +2,23 @@ body {
     min-height: 100%;
     height: auto;
 }
+.feed-image {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    box-shadow: 2px 2px 5px #888888;
+}
+.feed-image:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+.feed-image img {
+    width: 100%;
+    vertical-align: middle;
+}
 .itemlist li {
     height: 46px;
 }
