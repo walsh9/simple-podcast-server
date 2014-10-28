@@ -62,14 +62,25 @@ var PodcastServer = function () {
             return feedObject;
         });
     }
-    var getId3 = function (fileName) {
+    // var getId3 = function (fileName) {
+    //     var file = {};
+    //     file.name = path.basename(fileName);
+    //     if (path.extname(fileName) == ".mp3") {
+    //         file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
+    //     }
+    //     return file;
+    // };
+    var getStats = function(fileName) {
         var file = {};
         file.name = path.basename(fileName);
-        // if (path.extname(fileName) == ".mp3") {
-        //     file.tags = id3Async({"file": fileName, "type": id3.OPEN_LOCAL});
-        // }
-        return file;
-    };
+        return fs.statAsync(fileName)
+        .then(function (stats) {
+            file.size = stats.size;
+            file.ctime = Date.parse(stats.ctime);
+            file.mtime = Date.parse(stats.mtime);
+            return file;
+        });
+    }
     var getFiles = function (folder) {
         var fileSet = {
             "folderName": folder
@@ -79,7 +90,7 @@ var PodcastServer = function () {
             .map(function(x) {
                 return path.join(folder, x);
             })
-            .map(getId3)
+            .map(getStats)
             .then(
                 function(files) {
                     fileSet.files = files;
@@ -90,9 +101,15 @@ var PodcastServer = function () {
     var createFeedObject = function (fileSet) {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
+        var pubDate = new Date();
+        pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
+            return file.ctime;
+        })));
+        console.log(pubDate.toString());
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
+            pubDate: pubDate,
             feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/'),
             generator: "Simple Podcast Server",
             site_url: serverUrl,
@@ -105,11 +122,13 @@ var PodcastServer = function () {
             var baseFileName = fileSet.files[i].name;
             var fileName = path.join(dirName, baseFileName);
             var cleanName = path.basename(baseFileName, path.extname(fileName));
+            var createDate = new Date();
+            createDate.setTime(fileSet.files[i].ctime);
             var itemOptions = {
                 title: cleanName,
                 description: cleanName,
                 url: serverUrl + ['feeds', feedTitle, cleanName].map(encodeURIComponent).join('/'),
-                date: Date.now(),
+                date: createDate,
                 enclosure: {
                     url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
                     file: fileName
