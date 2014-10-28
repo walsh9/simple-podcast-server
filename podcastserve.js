@@ -105,6 +105,7 @@ var PodcastServer = function () {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
         var pubDate = new Date();
+        var stub = generateStub(feedTitle).stub;
         pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
             return file.ctime;
         })));
@@ -112,7 +113,7 @@ var PodcastServer = function () {
             title: feedTitle,
             description: feedTitle,
             pubDate: pubDate,
-            feed_url: serverUrl + ['feeds', 'xml', feedTitle].map(encodeURIComponent).join('/'),
+            feed_url: serverUrl + ['feeds', 'xml', stub].map(encodeURIComponent).join('/'),
             generator: "Simple Podcast Server",
             site_url: serverUrl,
         };
@@ -129,7 +130,7 @@ var PodcastServer = function () {
             var itemOptions = {
                 title: cleanName,
                 description: cleanName,
-                url: serverUrl + ['feeds', feedTitle, cleanName].map(encodeURIComponent).join('/'),
+                url: serverUrl + ['feeds', stub, cleanName].map(encodeURIComponent).join('/'),
                 date: createDate,
                 enclosure: {
                     url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
@@ -194,9 +195,11 @@ var PodcastServer = function () {
             });
     };
     var getFeedXml = function(req, res, next) {
-        var name = req.params.name;
-        var folder = path.join(options.documentRoot, name);
-        getFiles(folder)
+        getFeedPath(req.params.name)
+            .then(function (name) {
+                return path.join(options.documentRoot, name);
+            })
+            .then(getFiles)
             .then(createFeedObject)
             .then(setFeedCoverArt)
             .then(function renderFeedXml (feedObject) {
