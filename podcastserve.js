@@ -7,7 +7,10 @@ var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
 var path = require('path');
 var id3Async = Promise.promisify(id3);
+var crypto = require('crypto');
 var naturalSort = require('./local_modules/naturalSort');
+var md5 = require('crypto-js/md5');
+var enc_hex = require('crypto-js/enc-hex');
 
 // load configFile
 var config = require('./config');
@@ -105,7 +108,6 @@ var PodcastServer = function () {
         pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
             return file.ctime;
         })));
-        console.log(pubDate.toString());
         var feedOptions = {
             title: feedTitle,
             description: feedTitle,
@@ -135,7 +137,7 @@ var PodcastServer = function () {
                 }
             };
             feed.item(itemOptions);
-        }
+        };
         console.log("Creating feed for " + dirName);
         return {"name"  : feed.title,
                 "folder": [options.documentRoot, feedTitle].join('/'),
@@ -143,16 +145,43 @@ var PodcastServer = function () {
                 "xml"   : feed.xml()
                };
     };
-    getIndex = function(req, res, next) {
+    var generateStub = function (dir) {
+        var feed = {}
+        feed.title = dir;
+        feed.stub = md5(dir)
+        .toString(enc_hex)
+        .slice(0,8);
+        return feed;
+    };
+    var getIndex = function(req, res, next) {
         getSubDirs(options.documentRoot)
-        .then(function renderIndexTemplate (dirs) {
-            res.render('index', {"feeds": dirs});
+        .map(generateStub)
+        .then(function renderIndexTemplate (feeds) {
+            res.render('index', {"feeds": feeds});
         })
     };
-    getFeed = function(req, res, next) {
-        var name = req.params.name;
-        var folder = path.join(options.documentRoot, name);
-        getFiles(folder)
+    var getFeedPath = function (path) {
+        var titleSearch, stubSearch;
+        return getSubDirs(options.documentRoot)
+        .map(generateStub)
+        .then(function renderIndexTemplate (feeds) { 
+            titleSearch = _.where(feeds, {'title': path})
+            if (titleSearch.length > 0) {
+                return titleSearch[0].title
+            }
+            stubSearch = _.where(feeds, {'stub': path})
+            if (stubSearch.length > 0) {
+                return stubSearch[0].title
+            }
+            return '404';
+        });
+    }
+    var getFeed = function(req, res, next) {
+        getFeedPath(req.params.name)
+            .then(function (name) {
+                return path.join(options.documentRoot, name);
+            })
+            .then(getFiles)
             .then(createFeedObject)
             .then(setFeedCoverArt)
             .then(function renderFeedTemplate (feedObject) {
@@ -164,7 +193,7 @@ var PodcastServer = function () {
                 res.status(404).send('Couldn\'t find feed: ' + name);
             });
     };
-    getFeedXml = function(req, res, next) {
+    var getFeedXml = function(req, res, next) {
         var name = req.params.name;
         var folder = path.join(options.documentRoot, name);
         getFiles(folder)
