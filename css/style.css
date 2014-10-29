@@ -1,6 +1,7 @@
 body {
     min-height: 100%;
     height: auto;
+    padding-top: 70px; 
 }
 .feed-image {
     display: inline-block;
@@ -8,6 +9,18 @@ body {
     height: 100px;
     margin-right: 10px;
     box-shadow: 2px 2px 5px #888888;
+}
+@media (min-width: 768px) { 
+    .feed-image {
+        width: 160px;
+        height: 160px;
+    }
+}
+@media (min-width: 992px) { 
+    .feed-image {
+        width: 250px;
+        height: 250px;
+    }
 }
 .feed-image:before {
     content: "";
@@ -18,6 +31,9 @@ body {
 .feed-image img {
     width: 100%;
     vertical-align: middle;
+}
+h1, h1 span {
+    vertical-align: top;
 }
 .itemlist li {
     height: 46px;
@@ -32,6 +48,16 @@ body {
     background-color: #FFF;
     border-color: #CCC;
 }
+.itemlist li {
+    padding-right: 80px;
+    overflow: hidden;
+}
+.itemlist li .buttons {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+}
+
 /* So player doesn't overlap bottom items */
 .itemlist {
     margin-bottom: 85px;
@@ -51,7 +77,7 @@ body {
 .player .player-info {
     height: 25px;
     padding: 0 5px;
-    vertical-align: center;
+    vertical-align: middle;
 }
 .player .player-controls {
      height: 50px;

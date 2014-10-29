@@ -6,12 +6,12 @@ block content
       a(href=feed.feed_url, target='new').btn.btn-primary.pull-right
         b Subscribe 
         span.octicon.octicon-rss
-      h1 
+      h1.clearfix
         if feed.image_url
-          .feed-image
+          .feed-image.pull-left
             img(src=feed.image_url)
             
-        span #{feed.title}       
+        span #{feed.title}
     .content
       ul.itemlist.list-group
         each item in feed.items
