@@ -12,6 +12,23 @@
     var infoTitle = document.querySelector('.player .player-title');
     var infoTime = document.querySelector('.player .player-time');
     var seekBar = $('.player .player-seekbar input').slider();
+    var copyLink = document.querySelector('.player .player-copy-link')
+    var getQueryVariable = function (variable) {
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       var i;
+       for (i = 0; i < vars.length; i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] === variable){
+                    if (pair[1]) {
+                        return pair[1];
+                    } else {
+                        return true;
+                    }
+               }
+       }
+       return false ;
+    }
     var secondsToTime = function (timeInSeconds) {
         var hour = Math.floor(timeInSeconds / 3600);
         var min = Math.floor(timeInSeconds % 3600 / 60);
@@ -53,6 +70,16 @@
     var skipAhead = function () {
         skip(skipAheadInterval);
     };
+    var skipTo = function(t) {
+        function skipToTime() {
+            player.currentTime = t;
+            player.removeEventListener('loadedmetadata', skipToTime);
+            if (getQueryVariable('autoplay')) {
+                player.play()
+            }
+        };
+        player.addEventListener('loadedmetadata', skipToTime);
+    }
     var toggle = function () {
         if (player.paused) {
             play();
@@ -61,10 +88,11 @@
         };
         updateView();
     };
-    var load = function (url, title) {
+    var load = function (url, title, id) {
         if (source.src !== url) {
             source.src = url;
             player.title = title;
+            player.mediaId = id;
             player.load();
             updateView();
         } else {
@@ -85,7 +113,8 @@
             this.parentElement.parentElement.classList.add('is-playing');
             var url = this.getAttribute('data-url');
             var title = this.parentElement.parentElement.textContent;
-            load(url, title);
+            var id = this.parentElement.parentElement.id;
+            load(url, title, id);
             play();
         } else {
             toggle();
@@ -101,6 +130,12 @@
             seekBar.slider('setAttribute', 'min', 0)
                 .slider('setAttribute', 'max', player.duration)
                 .slider('setValue', player.currentTime);
+            copyLink.href = window.location.href.split('?')[0] + 
+                '?m=' +
+                player.mediaId +
+                '&t=' +
+                Math.floor(player.currentTime) +
+                '&autoplay';
         } else {
             infoTime.textContent = '';
         }
@@ -131,7 +166,27 @@
         skipBackButton.addEventListener('click', skipBack, true);
         skipAheadButton.addEventListener('click', skipAhead, true);        
     };
+
+    var initState = function () {
+        var m = getQueryVariable('m');
+        var button;
+        if (m) {
+            button = document.querySelector('#' + m + ' .btn');
+            if (button) {
+                playItem.call(button);
+                player.pause();
+                var t = getQueryVariable('t');
+                if (t) {
+                    skipTo(t);
+                    if (getQueryVariable('autoplay')) {
+                        player.play()
+                    }
+                }
+            }
+        }
+    }
     player.addEventListener('timeupdate', updateView, true);
     attachButtons();
     updateView();
+    initState();
 }())

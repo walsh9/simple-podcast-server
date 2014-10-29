@@ -105,7 +105,7 @@ var PodcastServer = function () {
         var dirName = fileSet.folderName;
         var feedTitle = dirName.split(path.sep)[1];
         var pubDate = new Date();
-        var stub = generateStub(feedTitle).stub;
+        var stub = 'f' + generateStub(feedTitle);
         pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
             return file.ctime;
         })));
@@ -132,12 +132,13 @@ var PodcastServer = function () {
                 description: cleanName,
                 url: serverUrl + ['feeds', stub, cleanName].map(encodeURIComponent).join('/'),
                 date: createDate,
+                guid: 'm' + generateStub(cleanName, 12),
                 enclosure: {
                     url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
                     file: fileName
                 }
             };
-            feed.item(itemOptions);
+            var item = feed.item(itemOptions);
         };
         console.log("Creating feed for " + dirName);
         return {"name"  : feed.title,
@@ -146,17 +147,21 @@ var PodcastServer = function () {
                 "xml"   : feed.xml()
                };
     };
-    var generateStub = function (dir) {
+    var generateStub = function (s, len) {
+        var length = len || 8;
+        return md5(s)
+        .toString(enc_hex)
+        .slice(0, length);
+    }
+    var packageStub = function (dir) {
         var feed = {}
         feed.title = dir;
-        feed.stub = md5(dir)
-        .toString(enc_hex)
-        .slice(0,8);
+        feed.stub = 'f' + generateStub(dir);
         return feed;
     };
     var getIndex = function(req, res, next) {
         getSubDirs(options.documentRoot)
-        .map(generateStub)
+        .map(packageStub)
         .then(function renderIndexTemplate (feeds) {
             res.render('index', {"feeds": feeds});
         })
@@ -164,7 +169,7 @@ var PodcastServer = function () {
     var getFeedPath = function (path) {
         var titleSearch, stubSearch;
         return getSubDirs(options.documentRoot)
-        .map(generateStub)
+        .map(packageStub)
         .then(function renderIndexTemplate (feeds) { 
             titleSearch = _.where(feeds, {'title': path})
             if (titleSearch.length > 0) {
@@ -191,7 +196,7 @@ var PodcastServer = function () {
             })
             .catch(function(e) {
                 console.log(e);
-                res.status(404).send('Couldn\'t find feed: ' + name);
+                res.status(404).send('Couldn\'t find feed: ' + req.params.name);
             });
     };
     var getFeedXml = function(req, res, next) {
@@ -206,7 +211,7 @@ var PodcastServer = function () {
                 res.send(new Buffer(feedObject.xml));
             })
             .catch(function(e) {
-                res.status(404).send('Couldn\'t find feed: ' + name);
+                res.status(404).send('Couldn\'t find feed: ' + req.params.name);
             });
     };
 

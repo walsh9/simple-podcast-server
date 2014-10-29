@@ -15,7 +15,7 @@ block content
     .content
       ul.itemlist.list-group
         each item in feed.items
-          li.list-group-item 
+          li.list-group-item(id=item.guid)
             span.item-text #{item.title}
             div.buttons.pull-right
               button.btn.btn-primary.octicon.octicon-playback-play.item-play-button(type=button data-url=item.enclosure.url)
