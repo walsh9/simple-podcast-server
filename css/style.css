@@ -3,6 +3,35 @@ body {
     height: auto;
     padding-top: 70px; 
 }
+.feedlist a:first-child .thumb {
+    border-top-left-radius: 4px;
+}
+.feedlist a:last-child .thumb {
+    border-bottom-left-radius: 4px;
+}
+.feedlist .thumb {
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 40px;
+    width: 40px;
+    background: #ffffff;  
+}
+.feedlist .thumb:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+.feedlist .thumb img {
+    width: 100%;
+    vertical-align: middle;
+}
+.feedlist a {
+    padding-left: 50px;
+}
+
 .feed-image {
     display: inline-block;
     width: 100px;

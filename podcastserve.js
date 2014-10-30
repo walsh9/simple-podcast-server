@@ -53,10 +53,13 @@ var PodcastServer = function () {
                 return path.basename(x);
             });
     };
-    var setFeedCoverArt = function (feedObject) {
-        var folder = feedObject.folder
+    var getFeedCoverArt = function (folder) {
         return fs.readdirAsync(folder)
         .filter(isCoverArt)
+    }
+    var setFeedCoverArt = function (feedObject) {
+        var folder = feedObject.folder
+        return getFeedCoverArt(folder)
         .then(function (filenames) {
             if (filenames.length > 0) {
                 feedObject.feed.itunesImage = 
@@ -142,7 +145,7 @@ var PodcastServer = function () {
         };
         console.log("Creating feed for " + dirName);
         return {"name"  : feed.title,
-                "folder": [options.documentRoot, feedTitle].join('/'),
+                "folder": path.join(options.documentRoot, feedTitle),
                 "feed"  : feed,
                 "xml"   : feed.xml()
                };
@@ -162,6 +165,16 @@ var PodcastServer = function () {
     var getIndex = function(req, res, next) {
         getSubDirs(options.documentRoot)
         .map(packageStub)
+        .map(function (feed) {
+            var folder = path.join(options.documentRoot, feed.title);
+            return getFeedCoverArt(folder)
+                .then(function (covers) {
+                    if (covers.length > 0) {
+                        feed.image = ['media', feed.title, covers[0]].join('/');
+                    };
+                    return feed;
+                })
+        })
         .then(function renderIndexTemplate (feeds) {
             res.render('index', {"feeds": feeds});
         })
