@@ -203,7 +203,6 @@ var PodcastServer = function () {
             .then(getFiles)
             .then(createFeedObject)
             .then(function renderFeedTemplate (feedObject) {
-                console.log(feedObject.feed);
                 res.render('feed', {"feed": feedObject.feed});
             })
             .catch(function(e) {
