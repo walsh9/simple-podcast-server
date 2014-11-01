@@ -17,7 +17,7 @@ block content
         each item in feed.items
           li.list-group-item(id=item.guid)
             span.item-text #{item.title}
-            div.buttons.pull-right
+            div.buttons
               button.btn.btn-primary.octicon.octicon-playback-play.item-play-button(type=button data-url=item.enclosure.url)
               | &nbsp;
               a.btn.btn-primary.btn-sm(href=item.enclosure.url)

@@ -7,8 +7,9 @@ block content
     .content
       div.feedlist.list-group
         each feed in feeds
-          a.list-group-item(href='feeds/' + feed.hash)
+          a.list-group-item(href=feed.link)
             div.thumb
-                if (feed.image)
-                    img(src=feed.image)
+              if (feed.image)
+                img(src=feed.image)
             span.item-text #{feed.title}
+            a.btn.btn-primary.btn-sm.octicon.octicon-rss(href=feed.feed_url)

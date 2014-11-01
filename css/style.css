@@ -28,10 +28,20 @@ body {
     width: 100%;
     vertical-align: middle;
 }
-.feedlist a {
+.feedlist a.list-group-item {
     padding-left: 50px;
+    padding-right: 40px;
+}
+.feedlist a.btn.octicon-rss {
+    position: relative;
+    float: right;
+    right: 6px;
+    top: -34px;
 }
 
+h1 {
+        font-size: 18px;
+    }
 .feed-image {
     display: inline-block;
     width: 100px;
@@ -44,11 +54,17 @@ body {
         width: 160px;
         height: 160px;
     }
+    h1 {
+        font-size: 24px;
+    }
 }
 @media (min-width: 992px) { 
     .feed-image {
         width: 250px;
         height: 250px;
+    }
+    h1 {
+        font-size: 36px;
     }
 }
 .feed-image:before {

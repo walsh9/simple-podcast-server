@@ -161,10 +161,12 @@ var PodcastServer = function () {
         })
         .map(function (feed) {
             var folder = path.join(options.documentRoot, feed.title);
+            feed.link = serverUrl + ['feeds', feed.hash].map(encodeURIComponent).join('/');
+            feed.feed_url = serverUrl + ['feeds', 'xml', feed.hash].map(encodeURIComponent).join('/');
             return getFeedCoverArt(folder)
                 .then(function (covers) {
                     if (covers.length > 0) {
-                        feed.image = ['media', feed.title, covers[0]].join('/');
+                        feed.image = serverUrl + ['media', feed.title, covers[0]].join('/');
                     }
                     return feed;
                 });
@@ -201,6 +203,7 @@ var PodcastServer = function () {
             .then(getFiles)
             .then(createFeedObject)
             .then(function renderFeedTemplate (feedObject) {
+                console.log(feedObject.feed);
                 res.render('feed', {"feed": feedObject.feed});
             })
             .catch(function(e) {
