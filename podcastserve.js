@@ -113,7 +113,7 @@ var PodcastServer = function () {
         .then(function(covers) {
             if (covers.length > 0) {
                 feedOptions.itunesImage = 
-                feedOptions.image_url = serverUrl + ['media', feedTitle, covers[0]].join('/');
+                feedOptions.image_url = serverUrl + ['media', feedTitle, covers[0]].map(encodeURIComponent).join('/');
             }  
             var feed = new Podcast(feedOptions);
             fileSet.files.sort(function (a, b) {
@@ -166,7 +166,7 @@ var PodcastServer = function () {
             return getFeedCoverArt(folder)
                 .then(function (covers) {
                     if (covers.length > 0) {
-                        feed.image = serverUrl + ['media', feed.title, covers[0]].join('/');
+                        feed.image = serverUrl + ['media', feed.title, covers[0]].map(encodeURIComponent).join('/');
                     }
                     return feed;
                 });
