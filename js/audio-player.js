@@ -2,7 +2,7 @@
     'use strict';
     var skipBackInterval = 10;
     var skipAheadInterval = 30;
-    var player = document.querySelector('.player audio');
+    var player = new MediaElement('audioplayer');
     player.title = 'Nothing';
     var source = document.querySelector('.player audio source');
     var playerContainer = document.querySelector('.player');
@@ -12,7 +12,7 @@
     var infoTitle = document.querySelector('.player .player-title');
     var infoTime = document.querySelector('.player .player-time');
     var seekBar = $('.player .player-seekbar input').slider();
-    var copyLink = document.querySelector('.player .player-copy-link')
+    var copyLink = document.querySelector('.player .player-copy-link');
     var getQueryVariable = function (variable) {
        var query = window.location.search.substring(1);
        var vars = query.split("&");
@@ -28,7 +28,7 @@
                }
        }
        return false ;
-    }
+    };
     var secondsToTime = function (timeInSeconds) {
         var hour = Math.floor(timeInSeconds / 3600);
         var min = Math.floor(timeInSeconds % 3600 / 60);
@@ -46,7 +46,7 @@
     })
     .slider('on', 'slideStart', function(slider) {
         player.currentTime = slider.value;
-    })
+    });
     var play = function () {
         player.play();
     };
@@ -62,7 +62,7 @@
             var newTime = player.currentTime + skipTime || 0;
             var max = player.duration || 0;
             player.currentTime = within(min, newTime, max);
-        };
+        }
     };
     var skipBack = function () {
         skip(-skipBackInterval);
@@ -75,17 +75,17 @@
             player.currentTime = t;
             player.removeEventListener('loadedmetadata', skipToTime);
             if (getQueryVariable('autoplay')) {
-                player.play()
+                player.play();
             }
-        };
+        }
         player.addEventListener('loadedmetadata', skipToTime);
-    }
+    };
     var toggle = function () {
         if (player.paused) {
             play();
         } else {
             pause();
-        };
+        }
         updateView();
     };
     var load = function (url, title, id) {
@@ -101,10 +101,10 @@
     };
     var playItem = function () {
         if (!this.parentElement.parentElement.classList.contains('is-playing')) {
-            var items = this.parentElement.parentElement.parentElement.children
+            var items = this.parentElement.parentElement.parentElement.children;
             var i, item;
             for(i = 0; i < items.length; i++) {
-                var item = items[i];
+                item = items[i];
                 var button = item.querySelector('.btn');
                 item.classList.remove('is-playing');
                 button.classList.remove('octicon-playback-pause');
@@ -139,7 +139,7 @@
         } else {
             infoTime.textContent = '';
         }
-        var currentListButton = document.querySelector('.itemlist .is-playing .btn')
+        var currentListButton = document.querySelector('.itemlist .is-playing .btn');
         if (currentListButton) {
             if (player.paused) {
                 playButton.classList.remove('octicon-playback-pause');
@@ -151,8 +151,8 @@
                 playButton.classList.add('octicon-playback-pause');
                 currentListButton.classList.remove('octicon-playback-play');
                 currentListButton.classList.add('octicon-playback-pause');
-            };
-        };
+            }
+        }
     };
 
     var attachButtons = function () {
@@ -179,14 +179,15 @@
                 if (t) {
                     skipTo(t);
                     if (getQueryVariable('autoplay')) {
-                        player.play()
+                        player.play();
                     }
                 }
             }
         }
-    }
+    };
+
     player.addEventListener('timeupdate', updateView, true);
     attachButtons();
     updateView();
     initState();
-}())
+}());

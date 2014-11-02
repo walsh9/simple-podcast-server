@@ -21,7 +21,9 @@ var PodcastServer = function () {
         "serverName" : "localhost",
         "port" : "3000",
         "documentRoot" : "public",
-        "mediaExtensions" : [".mp3",".m4a",".mp4"],
+        "videoExtensions" : [".mp4"],
+        "audioExtensions" : [".mp3",".m4a"],
+        "otherExtensions" : [],
         "coverArtFiles" : ["folder.png", "folder.jpg"],
     };
     var options = {};
@@ -31,7 +33,19 @@ var PodcastServer = function () {
     var app = express();
     var serverUrl = "http://" + options.serverName + ":" + options.port + "/"; 
     var isMediaFile = function (filename) {
-        return _.contains(options.mediaExtensions, path.extname(filename));
+        var mediaExtensions = options.videoExtensions.concat(options.audioExtensions, options.otherExtensions);
+        return _.contains(mediaExtensions, path.extname(filename));
+    };
+    var getMediaType = function (filename) {
+        if (_.contains(options.videoExtensions, path.extname(filename))) {
+            return 'video';
+        } else if (_.contains(options.audioExtensions, path.extname(filename))) {
+            return 'audio';
+        } else if (_.contains(options.otherExtensions, path.extname(filename))) {
+            return 'other';
+        } else {
+            return 'none';
+        }
     };
     var isCoverArt = function (filename) {
         return _.contains(options.coverArtFiles.map(function (covername) {
@@ -134,9 +148,10 @@ var PodcastServer = function () {
                     enclosure: {
                         url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
                         file: fileName
-                    }
+                    },
                 };
                 var item = feed.item(itemOptions);
+                feed.items[i].mediatype = getMediaType(fileName);
             }
             console.log("Creating feed for " + dirName);
             return {"name"  : feed.title,
