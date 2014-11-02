@@ -156,7 +156,7 @@
     };
 
     var attachButtons = function () {
-        var items = document.querySelectorAll('.item-play-button');
+        var items = document.querySelectorAll('.item-play-button.audio');
         var i, item;
         for (i = 0; i < items.length; i++) {
             item = items[i];
@@ -164,7 +164,7 @@
         }
         playButton.addEventListener('click', toggle, true);
         skipBackButton.addEventListener('click', skipBack, true);
-        skipAheadButton.addEventListener('click', skipAhead, true);        
+        skipAheadButton.addEventListener('click', skipAhead, true);     
     };
 
     var initState = function () {

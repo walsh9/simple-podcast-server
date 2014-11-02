@@ -10,7 +10,7 @@ block content
         if feed.image_url
           .feed-image.pull-left
             img(src=feed.image_url)
-            
+
         span #{feed.title}
     .content
       ul.itemlist.list-group
@@ -18,8 +18,11 @@ block content
           li.list-group-item(id=item.guid)
             span.item-text #{item.title}
             div.buttons
-              if item.mediatype === 'audio' || item.mediatype === 'video'
-              button.btn.btn-primary.octicon.octicon-playback-play.item-play-button(class=item.mediatype type=button data-url=item.enclosure.url)
+              if item.mediatype === 'audio'
+                button.btn.btn-primary.octicon.octicon-playback-play.item-play-button.audio(type=button data-url=item.enclosure.url)
+              if item.mediatype === 'video'
+                - var vidlink = feed.hash + '/video/' + item.guid;
+                a.btn.btn-primary.octicon.octicon-playback-play.item-play-button.video(type=button data-url=item.enclosure.url href=vidlink)
               | &nbsp;
               a.btn.btn-primary.btn-sm(href=item.enclosure.url)
                 span.glyphicon.glyphicon-save

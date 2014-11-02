@@ -153,6 +153,7 @@ var PodcastServer = function () {
                 var item = feed.item(itemOptions);
                 feed.items[i].mediatype = getMediaType(fileName);
             }
+            feed.hash = 'f' + generateHash(feedTitle);
             console.log("Creating feed for " + dirName);
             return {"name"  : feed.title,
                     "folder": path.join(options.documentRoot, feedTitle),
@@ -210,6 +211,25 @@ var PodcastServer = function () {
             return '404';
         });
     };
+    var getVideoPage = function(req, res, next) {
+        getFeedPath(req.params.name)
+            .then(function (name) {
+                return path.join(options.documentRoot, name);
+            })
+            .then(getFiles)
+            .then(createFeedObject)
+            .then(function renderVideoTemplate (feedObject) { 
+                feedObject.feed.items = feedObject.feed.items.filter(function(item) {
+                    return item.guid === req.params.id;
+                });
+                res.render('video', {"feed": feedObject.feed});
+            })
+            .catch(function(e) {
+                res.status(404).send('Couldn\'t find video: ' + req.params.id);
+                console.log(e);
+                console.log(feedObject);
+            });
+    };
     var getFeed = function(req, res, next) {
         getFeedPath(req.params.name)
             .then(function (name) {
@@ -251,6 +271,7 @@ var PodcastServer = function () {
     app.use('/css', express.static(path.join(__dirname, 'css')));
     app.use('/js', express.static(path.join(__dirname, 'js')));
     app.use('/feeds/xml/:name', getFeedXml);
+    app.use('/feeds/:name/video/:id', getVideoPage);
     app.use('/feeds/:name', getFeed);
     app.use('/', getIndex);    
     app.listen(options.port);

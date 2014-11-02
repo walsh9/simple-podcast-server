@@ -3,6 +3,17 @@ body {
     height: auto;
     padding-top: 70px; 
 }
+#video {
+    width: 640;
+    margin: 20px auto;
+}
+#video .vjs-big-play-button {
+    left: 33%;
+    top: 33%;
+    width: 33%;
+    height: 33%;
+}
+
 .feedlist a:first-child .thumb {
     border-top-left-radius: 4px;
 }
