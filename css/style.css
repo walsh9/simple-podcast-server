@@ -8,9 +8,9 @@ body {
     margin: 20px auto;
 }
 #video .vjs-big-play-button {
-    left: 33%;
+    left: 40%;
     top: 33%;
-    width: 33%;
+    width: 20%;
     height: 33%;
 }
 
