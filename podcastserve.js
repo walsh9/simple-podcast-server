@@ -11,6 +11,7 @@ var crypto = require('crypto');
 var naturalSort = require('./local_modules/naturalSort');
 var md5 = require('crypto-js/md5');
 var enc_hex = require('crypto-js/enc-hex');
+var moment = require("moment");
 
 // load configFile
 var config = require('./config');
@@ -25,6 +26,8 @@ var PodcastServer = function () {
         "audioExtensions" : [".mp3",".m4a"],
         "otherExtensions" : [],
         "coverArtFiles" : ["folder.png", "folder.jpg"],
+        "useFilenameDates" : false,
+        "datePatterns": [], 
     };
     var options = {};
     Object.keys(defaults).forEach(function (property) {
@@ -107,13 +110,37 @@ var PodcastServer = function () {
                 }
             );
     };
+    var updateTimeFromFilename = function(filename, originalTime) {
+        var m, i;
+        for (i = 0; i < options.datePatterns.length; i++) {
+            var pattern = options.datePatterns[i];
+            var matches = pattern.matcher.exec(filename);
+            if (matches) {
+                m = moment(matches[1], pattern.format);
+                if (m.isValid()) {
+                    return m.unix() * 1000;
+                }
+            }
+        }
+        return originalTime;      
+    };
+
     var createFeedObject = function (fileSet) {
         var dirName = fileSet.folderName;
+        console.log("Creating feed for " + dirName);
         var feedTitle = dirName.split(path.sep)[1];
         var pubDate = new Date();
         var hash = 'f' + generateHash(feedTitle);
+        fileSet.files = fileSet.files.map(function(file) {
+            file.time = file.ctime;
+            if (options.useFilenameDates) {
+                file.time = updateTimeFromFilename(file.name, file.ctime);
+            }
+            return file;
+        });
+        console.log(fileSet.files);
         pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
-            return file.ctime;
+            return file.time;
         })));
         var feedOptions = {
             title: feedTitle,
@@ -137,14 +164,14 @@ var PodcastServer = function () {
                 var baseFileName = fileSet.files[i].name;
                 var fileName = path.join(dirName, baseFileName);
                 var cleanName = path.basename(baseFileName, path.extname(fileName));
-                var createDate = new Date();
-                createDate.setTime(fileSet.files[i].ctime);
+                var fileDate = new Date();
+                fileDate.setTime(fileSet.files[i].time);
                 var itemOptions = {
                     title: cleanName,
                     description: cleanName,
                     url: serverUrl + ['feeds', hash, cleanName].map(encodeURIComponent).join('/'),
-                    date: createDate,
-                    guid: 'm' + generateHash(cleanName, 12),
+                    date: fileDate,
+                    guid: 'm' + generateHash(baseFileName, 12),
                     enclosure: {
                         url: serverUrl + ['media', feedTitle, baseFileName].map(encodeURIComponent).join('/'),
                         file: fileName
@@ -154,7 +181,6 @@ var PodcastServer = function () {
                 feed.items[i].mediatype = getMediaType(fileName);
             }
             feed.hash = 'f' + generateHash(feedTitle);
-            console.log("Creating feed for " + dirName);
             return {"name"  : feed.title,
                     "folder": path.join(options.documentRoot, feedTitle),
                     "feed"  : feed,
@@ -169,6 +195,7 @@ var PodcastServer = function () {
         .slice(0, length);
     };
     var getIndex = function(req, res, next) {
+        console.log("Creating index");
         getSubDirs(options.documentRoot)
         .map(function (dir) {
             var feed = {title: dir};
