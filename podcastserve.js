@@ -138,7 +138,6 @@ var PodcastServer = function () {
             }
             return file;
         });
-        console.log(fileSet.files);
         pubDate.setTime(Math.max.apply(undefined, fileSet.files.map(function(file) {
             return file.time;
         })));
