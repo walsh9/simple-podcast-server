@@ -134,7 +134,7 @@ h1, h1 span {
     height: 75px;
     transition: bottom 1s ease-out;
     bottom: 0;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.3);
 }
 .player .player-info {
     height: 25px;
