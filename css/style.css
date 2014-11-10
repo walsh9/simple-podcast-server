@@ -25,8 +25,8 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    height: 40px;
-    width: 40px;
+    height: 60px;
+    width: 60px;
     background: #ffffff;  
 }
 .feedlist .thumb:before {
@@ -40,25 +40,25 @@ body {
     vertical-align: middle;
 }
 .feedlist a.list-group-item {
-    padding-left: 50px;
-    padding-right: 40px;
+    padding-left: 70px;
+    padding-right: 50px;
 }
 .feedlist a.btn.octicon-rss {
     position: relative;
     float: right;
-    right: 6px;
-    top: -34px;
+    right: 12px;
+    top: -44px;
 }
 
 h1 {
-        font-size: 18px;
+        font-size: 24px;
     }
 .feed-image {
     display: inline-block;
     width: 100px;
     height: 100px;
     margin-right: 10px;
-    box-shadow: 2px 2px 5px #888888;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 @media (min-width: 768px) { 
     .feed-image {
@@ -66,7 +66,7 @@ h1 {
         height: 160px;
     }
     h1 {
-        font-size: 24px;
+        font-size: 36px;
     }
 }
 @media (min-width: 992px) { 
@@ -75,7 +75,7 @@ h1 {
         height: 250px;
     }
     h1 {
-        font-size: 36px;
+        font-size: 42px;
     }
 }
 .feed-image:before {
@@ -92,17 +92,22 @@ h1, h1 span {
     vertical-align: top;
 }
 .itemlist li {
-    height: 46px;
+    height: 50px;
 }
+.itemlist li .btn {
+    height: 36px;
+    width: 36px;
+}
+
 .itemlist li.is-playing {
     color: #FFF;
-    background-color: #428BCA;
-    border-color: #428BCA;
+    background-color: #2196F3;
+    border-color: #2196F3;
 }
 .itemlist li.is-playing .btn {
-    color: #333;
-    background-color: #FFF;
-    border-color: #CCC;
+    color: #2196F3;
+    background-color: #fff;
+    background-image: none;
 }
 .itemlist li {
     padding-right: 80px;
@@ -124,11 +129,12 @@ h1, h1 span {
     width: 100%;
     margin: 0;
     left: 0;
-    background-color: #1d1f21;
-    color: #ffffff;
+    background-color: #2196F3;
+    color: #fff;
     height: 75px;
     transition: bottom 1s ease-out;
     bottom: 0;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
 }
 .player .player-info {
     height: 25px;
@@ -142,28 +148,31 @@ h1, h1 span {
     bottom: -75px;
 }
 .player .player-title {
-    color: #ccddee;
+    color: #def;
 }
 .player .player-time {
-    color: #ccddee;
+    color: #fff;
 }
 .player .player-controls button {
-    background-color: #1d1f21;
-    color: #ffffff;
+    background-color: #2196F3;
+    color: #B2DBFB;
     padding: 0;
-    border-width: 0 2px 0 0;
-    border-right: 2px #2d2f33 solid;
+    border-width: 0;
     height: 50px;
     padding: 0 5px;
     width: 50px;
     vertical-align: middle;
+}
+.player .player-controls button:hover {
+    color: #fff;
+    transition: all 0.2s ease 0s;
 }
 .player .player-skip-ahead, .player .player-skip-back {
     font-size: 18px;
 }
 .player .player-controls button span {
     display: block;
-    font-family: Arial;
+    font-family: "Josefin Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
 }
 .player .player-seekbar {
@@ -191,8 +200,12 @@ h1, h1 span {
 .player .player-copy-link {
     display: inline-block;
     cursor: pointer;
-    background-color: #1d1f21;
-    color: #ffffff;
+    text-decoration: none;
+    color: #B2DBFB;
     height: 50px;
     width: 50px;
+}
+.player .player-copy-link:hover {
+    color: #fff;
+    transition: all 0.2s ease 0s;
 }
