@@ -121,7 +121,7 @@ h1, h1 span {
 
 /* So player doesn't overlap bottom items */
 .itemlist {
-    margin-bottom: 85px;
+    margin-bottom: 105px;
 }
 /* player styles */
 .player {
@@ -131,21 +131,21 @@ h1, h1 span {
     left: 0;
     background-color: #2196F3;
     color: #fff;
-    height: 75px;
-    transition: bottom 1s ease-out;
+    height: 105px;
+    transition: bottom .5s ease-out;
     bottom: 0;
-    box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
 }
 .player .player-info {
-    height: 25px;
-    padding: 0 5px;
+    height: 45px;
+    padding: 10px 15px;
     vertical-align: middle;
 }
 .player .player-controls {
-     height: 50px;
+     height: 60px;
 }
 .player.is-hidden {
-    bottom: -75px;
+    bottom: -105px;
 }
 .player .player-title {
     color: #def;
