@@ -5,8 +5,7 @@ block content
     header
       h1 
         a(href=feed.site_url + 'feeds/' + feed.hash) #{feed.title}
-      -console.log(feed)
       h2 #{feed.items[0].title}
     .content
-        video#video.video-js.vjs-default-skin(data-setup={} controls preload="auto" width="640" height="264")
-          source(src=feed.items[0].enclosure.url type='video/mp4')
+        video#video.video-js.vjs-default-skin(data-setup={} controls preload="auto" width="854" height="480")
+            source(src=feed.items[0].enclosure.url type='video/mp4')
