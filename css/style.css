@@ -133,27 +133,34 @@ h1, h1 span {
     left: 0;
     background-color: #2196F3;
     color: #fff;
-    height: 105px;
+    height: 150px;
     transition: bottom .5s ease-out;
     bottom: 0;
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
 }
 .player .player-info {
-    height: 45px;
+    height: 50px;
     padding: 10px 15px;
     vertical-align: middle;
 }
 .player .player-controls {
-     height: 60px;
+     height: 50px;
 }
 .player.is-hidden {
-    bottom: -105px;
+    bottom: -150px;
 }
 .player .player-title {
     color: #def;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 25px;
+    display: block;
 }
 .player .player-time {
     color: #fff;
+    float: right;
+    text-align: right;
+    width: 7em;
 }
 .player .player-controls button {
     background-color: #2196F3;
@@ -180,11 +187,16 @@ h1, h1 span {
 .player .player-seekbar {
     display: inline-block;
     margin: 0 22px;
-    width: 50%;
+    width: 100%;
+}
+.player .controlrow {
+    width: 100%;
+    padding: 0 10px;
 }
 .player .player-seekbar .slider {
     display: inline-block;
     height: 50px;
+    max-width: 90%;
     width: 100%;
 }
 .player .player-seekbar .slider-track {
@@ -202,12 +214,46 @@ h1, h1 span {
 .player .player-copy-link {
     display: inline-block;
     cursor: pointer;
+    text-align: center;
     text-decoration: none;
     color: #B2DBFB;
     height: 50px;
     width: 50px;
+    position: absolute;
+    right: 5px;
+    bottom: -5px;
 }
 .player .player-copy-link:hover {
     color: #fff;
     transition: all 0.2s ease 0s;
+}
+.player .controlrow.buttons {
+    text-align: center;
+}
+@media (min-width: 640px) { 
+    .player {
+        height: 100px;
+    }
+    .player.is-hidden {
+        bottom: -100px;
+    }
+    .player .controlrow.seekbar {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 70%;
+        text-align: left;
+    }
+    .player .controlrow.buttons {
+        text-align: left;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 30%;
+        min-width: 210px;
+    }
+    .player .player-copy-link {
+        position: auto;
+        right: auto;
+    }
 }

@@ -2,15 +2,17 @@
     audio#audioplayer
         source(type="audio/mpeg")
     .player-info
-        span.player-np-label Now Playing: 
-        span.player-title Nothing
-        span.player-time.pull-right
+        span.player-time
+        span.player-title 
     .player-controls
-        button.mega-octicon.octicon-playback-rewind.player-skip-back
-            span 10
-        button.mega-octicon.octicon-playback-play.player-play 
-        button.mega-octicon.octicon-playback-fast-forward.player-skip-ahead
-            span 30
-        span.player-seekbar 
-            input
-        a.mega-octicon.octicon-bookmark.player-copy-link(title="Right Click -> Copy Location")
+        .controlrow.seekbar
+            span.player-seekbar 
+                input
+        .controlrow.buttons
+            button.mega-octicon.octicon-playback-rewind.player-skip-back
+                span 10
+            button.mega-octicon.octicon-playback-play.player-play 
+            button.mega-octicon.octicon-playback-fast-forward.player-skip-ahead
+                span 30
+            a.mega-octicon.octicon-bookmark.player-copy-link(title="Right Click -> Copy Location")
+
