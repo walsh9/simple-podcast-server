@@ -36,6 +36,13 @@ Option | Description
 `config.port` | Port to listen on.
 `config.documentRoot` | Path to the folder that will contain the media folders. e.g. `public`, `media`, `podcasts`
 
+### Screenshots
+![Example](https://cloud.githubusercontent.com/assets/6074785/6036398/9531ef9a-ac12-11e4-9732-eb5aca56ed5c.png)
+
+![Example](https://cloud.githubusercontent.com/assets/6074785/6036405/9f93173e-ac12-11e4-9345-daaa6fc5a4e0.png)
+
+![Example](https://cloud.githubusercontent.com/assets/6074785/6036409/a1492d3e-ac12-11e4-96c3-19466ac900ce.png)
+
 ### Other stuff
  - You can add images to the folders to be used as thumbnails.
  - If the file names contain dates, you can sort the files by those dates (Default is file create date.)
@@ -51,3 +58,4 @@ Details in the example config file.
 
 ### License
 MIT
+
