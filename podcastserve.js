@@ -2,6 +2,7 @@ var Podcast = require("podcast");
 var Promise = require("bluebird");
 var _ = require("lodash");
 var express = require("express");
+var compression = require('compression')
 var jade = require('jade');
 var fs = Promise.promisifyAll(require("fs"));
 var id3 = require('id3js');
@@ -286,6 +287,7 @@ var PodcastServer = function () {
     };
 
     app.set('view engine', 'jade');
+    app.use(compression());
     app.use('/media', express.static(path.join(__dirname, options.documentRoot), {
         setHeaders: function(res, path) {
             if (isMediaFile(res.req.url)) {
