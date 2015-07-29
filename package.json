@@ -5,6 +5,7 @@
   "main": "podcastserve.js",
   "dependencies": {
     "bluebird": "^2.2.1",
+    "compression": "^1.5.1",
     "crypto-js": "^3.1.2-5",
     "express": "^4.6.1",
     "id3js": "^1.1.3",
