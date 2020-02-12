@@ -10,9 +10,9 @@
     "express": "^4.6.1",
     "id3js": "^1.1.3",
     "jade": "^1.5.0",
-    "lodash": "^2.4.1",
+    "lodash": "^4.17.15",
     "moment": "^2.8.3",
-    "podcast": "^0.1.0"
+    "podcast": "^1.1.0"
   },
   "devDependencies": {},
   "scripts": {
