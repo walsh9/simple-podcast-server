@@ -285,7 +285,7 @@ var PodcastServer = function () {
             });
     };
 
-    app.set('view engine', 'jade');
+    app.set('view engine', 'pug');
     app.use(compression());
     app.use('/media', express.static(path.join(__dirname, options.documentRoot), {
         setHeaders: function (res, path) {
