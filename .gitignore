@@ -1,6 +1,7 @@
 # Web Server / Test Data #
 ##########################
 public/
+podcasts/
 *.xml
 *.mp3
 *.mp4
